@@ -1,9 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shopping_list/data/categories.dart';
+import 'package:shopping_list/models/category.dart';
 
 class NewGroceryItem extends StatelessWidget {
-  const NewGroceryItem({super.key});
+  NewGroceryItem({super.key});
+  final _formKey = GlobalKey<FormState>();
+  var _enteredItemName = '';
+  var _entertedQuantity = 1;
+  Category? _enteredCategory;
+  void _addItem() {
+    if (_formKey.currentState!.validate()) {
+      _formKey.currentState!.save();
+      print(_enteredCategory!.title);
+      print(_enteredItemName);
+      print(_entertedQuantity);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -13,6 +27,7 @@ class NewGroceryItem extends StatelessWidget {
       body: Padding(
         padding: const EdgeInsets.all(12),
         child: Form(
+          key: _formKey,
           child: Column(
             children: [
               TextFormField(
@@ -20,7 +35,16 @@ class NewGroceryItem extends StatelessWidget {
                 decoration: const InputDecoration(
                     label: Text('Enter the grocery name')),
                 validator: (value) {
-                  return 'demo...';
+                  if (value == null ||
+                      value.isEmpty ||
+                      value.trim().length <= 1 ||
+                      value.trim().length > 50) {
+                    return 'Must be between 2 to 50 characteres';
+                  }
+                  return null;
+                },
+                onSaved: (value) {
+                  _enteredItemName = value!;
                 },
               ),
               Row(
@@ -36,6 +60,18 @@ class NewGroceryItem extends StatelessWidget {
                       inputFormatters: [
                         FilteringTextInputFormatter.digitsOnly,
                       ],
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter the quantity';
+                        }
+                        if (value == '0') {
+                          return 'Quantity can\'t be zero';
+                        }
+                        return null;
+                      },
+                      onSaved: (value) {
+                        _entertedQuantity = int.parse(value!);
+                      },
                     ),
                   ),
                   const SizedBox(
@@ -67,6 +103,15 @@ class NewGroceryItem extends StatelessWidget {
                       ],
                       onChanged: (value) {},
                       hint: const Text('Select category'),
+                      validator: (value) {
+                        if (value == null) {
+                          return 'Please select the category';
+                        }
+                        return null;
+                      },
+                      onSaved: (value) {
+                        _enteredCategory = Category(value!.title, value.color);
+                      },
                     ),
                   )
                 ],
@@ -78,14 +123,16 @@ class NewGroceryItem extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   TextButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      _formKey.currentState!.reset();
+                    },
                     child: const Text('Reset'),
                   ),
                   const SizedBox(
                     width: 6,
                   ),
                   ElevatedButton(
-                    onPressed: () {},
+                    onPressed: _addItem,
                     child: const Text('Add item'),
                   ),
                 ],

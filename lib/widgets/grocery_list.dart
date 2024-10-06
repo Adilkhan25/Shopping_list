@@ -12,7 +12,7 @@ class GroceryList extends StatefulWidget {
 class _GroceryListState extends State<GroceryList> {
   void _addNewGroceryItem() {
     Navigator.of(context)
-        .push(MaterialPageRoute(builder: (ctx) => const NewGroceryItem()));
+        .push(MaterialPageRoute(builder: (ctx) =>  NewGroceryItem()));
   }
 
   @override
