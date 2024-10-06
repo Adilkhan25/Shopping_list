@@ -2,19 +2,25 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shopping_list/data/categories.dart';
 import 'package:shopping_list/models/category.dart';
+import 'package:shopping_list/models/grocery_item.dart';
 
 class NewGroceryItem extends StatelessWidget {
-  NewGroceryItem({super.key});
+  NewGroceryItem({
+    super.key,
+  });
+
   final _formKey = GlobalKey<FormState>();
   var _enteredItemName = '';
   var _entertedQuantity = 1;
   Category? _enteredCategory;
-  void _addItem() {
+  void _addItem(BuildContext context) {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
-      print(_enteredCategory!.title);
-      print(_enteredItemName);
-      print(_entertedQuantity);
+      Navigator.of(context).pop(GroceryItem(
+          id: DateTime.now().toString(),
+          name: _enteredItemName,
+          quantity: _entertedQuantity,
+          category: _enteredCategory!));
     }
   }
 
@@ -132,7 +138,9 @@ class NewGroceryItem extends StatelessWidget {
                     width: 6,
                   ),
                   ElevatedButton(
-                    onPressed: _addItem,
+                    onPressed: () {
+                      _addItem(context);
+                    },
                     child: const Text('Add item'),
                   ),
                 ],
