@@ -4,15 +4,24 @@ import 'package:shopping_list/data/categories.dart';
 import 'package:shopping_list/models/category.dart';
 import 'package:shopping_list/models/grocery_item.dart';
 
-class NewGroceryItem extends StatelessWidget {
-  NewGroceryItem({
+class NewGroceryItem extends StatefulWidget {
+  const NewGroceryItem({
     super.key,
   });
 
+  @override
+  State<NewGroceryItem> createState() => _NewGroceryItemState();
+}
+
+class _NewGroceryItemState extends State<NewGroceryItem> {
   final _formKey = GlobalKey<FormState>();
+
   var _enteredItemName = '';
+
   var _entertedQuantity = 1;
+
   Category? _enteredCategory;
+
   void _addItem(BuildContext context) {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();

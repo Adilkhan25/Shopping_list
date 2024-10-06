@@ -14,7 +14,7 @@ class _GroceryListState extends State<GroceryList> {
   void _addNewGroceryItem() async {
     final newItem = await Navigator.of(context).push<GroceryItem>(
       MaterialPageRoute(
-        builder: (ctx) => NewGroceryItem(),
+        builder: (ctx) => const NewGroceryItem(),
       ),
     );
     if (newItem != null) {
@@ -40,16 +40,51 @@ class _GroceryListState extends State<GroceryList> {
               child: ListView.builder(
                   itemCount: _groceryList.length,
                   itemBuilder: (ctx, idx) {
-                    return ListTile(
-                      leading: ColoredBox(
-                        color: _groceryList[idx].category.color,
-                        child: const SizedBox(
-                          width: 20,
-                          height: 20,
+                    return Dismissible(
+                      key: Key(_groceryList[idx].id),
+                      background: Container(
+                        color: Colors.red,
+                        child: const Align(
+                          alignment: Alignment.centerLeft,
+                          child: Padding(
+                            padding: EdgeInsets.all(16),
+                            child: Icon(Icons.delete),
+                          ),
                         ),
                       ),
-                      title: Text(_groceryList[idx].name),
-                      trailing: Text(_groceryList[idx].quantity.toString()),
+                      direction: DismissDirection.startToEnd,
+                      onDismissed: (DismissDirection direction) {
+                        final int removedAtIndex = idx;
+                        final GroceryItem removedGrocery = _groceryList[idx];
+                        setState(() {
+                          _groceryList.remove(_groceryList[idx]);
+                        });
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('${removedGrocery.name} deleted'),
+                            action: SnackBarAction(
+                              label: 'Undo',
+                              onPressed: () {
+                                setState(() {
+                                  _groceryList.insert(
+                                      removedAtIndex, removedGrocery);
+                                });
+                              },
+                            ),
+                          ),
+                        );
+                      },
+                      child: ListTile(
+                        leading: ColoredBox(
+                          color: _groceryList[idx].category.color,
+                          child: const SizedBox(
+                            width: 20,
+                            height: 20,
+                          ),
+                        ),
+                        title: Text(_groceryList[idx].name),
+                        trailing: Text(_groceryList[idx].quantity.toString()),
+                      ),
                     );
                   }),
             ),
