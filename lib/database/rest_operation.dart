@@ -64,7 +64,7 @@ class RestOperation {
     return groceryList;
   }
 
-  static void delete(String id) async {
+  static Future<void> delete(String id) async {
     try {
       await db.collection(collection).doc(id).delete();
       developer.log(

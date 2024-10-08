@@ -22,19 +22,26 @@ class _NewGroceryItemState extends State<NewGroceryItem> {
   var _entertedQuantity = 1;
 
   Category? _enteredCategory;
+  var isSending = false;
 
   void _addItem(BuildContext context) {
     if (_formKey.currentState!.validate()) {
+      isSending = true;
       _formKey.currentState!.save();
       final grocery = {
         'name': _enteredItemName,
         'quantity': _entertedQuantity,
         'category': _enteredCategory!.title,
       };
-    String id =  RestOperation.addItem(grocery);
+      String id = RestOperation.addItem(grocery);
+
       if (!mounted) return;
       Navigator.of(context).pop(
-        GroceryItem(id: id, name: _enteredItemName, quantity: _entertedQuantity, category: _enteredCategory!),
+        GroceryItem(
+            id: id,
+            name: _enteredItemName,
+            quantity: _entertedQuantity,
+            category: _enteredCategory!),
       );
     }
   }
@@ -144,7 +151,7 @@ class _NewGroceryItemState extends State<NewGroceryItem> {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   TextButton(
-                    onPressed: () {
+                    onPressed: isSending?null: () {
                       _formKey.currentState!.reset();
                     },
                     child: const Text('Reset'),
@@ -156,7 +163,7 @@ class _NewGroceryItemState extends State<NewGroceryItem> {
                     onPressed: () {
                       _addItem(context);
                     },
-                    child: const Text('Add item'),
+                    child:isSending? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(),) : const Text('Add item'),
                   ),
                 ],
               )
