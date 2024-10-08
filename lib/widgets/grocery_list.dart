@@ -28,12 +28,16 @@ class _GroceryListState extends State<GroceryList> {
   }
 
   void _addNewGroceryItem() async {
-    await Navigator.of(context).push<GroceryItem>(
+    final newItem = await Navigator.of(context).push<GroceryItem>(
       MaterialPageRoute(
         builder: (ctx) => const NewGroceryItem(),
       ),
     );
-    _loadTheData();
+    if (newItem != null) {
+      setState(() {
+        _groceryList.add(newItem);
+      });
+    }
   }
 
   @override
@@ -66,27 +70,32 @@ class _GroceryListState extends State<GroceryList> {
                       ),
                       direction: DismissDirection.startToEnd,
                       onDismissed: (DismissDirection direction) {
-                        final removeItemId = _groceryList[idx].id;
-                        final removedGrocery = {
-                          'name': _groceryList[idx].name,
-                          'quantity': _groceryList[idx].quantity,
-                          'category': _groceryList[idx].category.title,
-                        };
-                        RestOperation.delete(removeItemId);
-                        _loadTheData();
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text('${removedGrocery['name']} deleted'),
-                            action: SnackBarAction(
-                              label: 'Undo',
-                              onPressed: () {
-                                RestOperation.addItem(
-                                    removedGrocery, removeItemId);
-                                _loadTheData();
-                              },
-                            ),
-                          ),
-                        );
+                        final removedAtIndex = idx;
+                        final removedItem = _groceryList[idx];
+                        setState(() {
+                          _groceryList.remove(removedItem);
+                        });
+                        ScaffoldMessenger.of(context)
+                            .showSnackBar(
+                              SnackBar(
+                                content: Text('${removedItem.name} deleted'),
+                                action: SnackBarAction(
+                                  label: 'Undo',
+                                  onPressed: () {
+                                    setState(() {
+                                      _groceryList.insert(
+                                          removedAtIndex, removedItem);
+                                    });
+                                  },
+                                ),
+                              ),
+                            )
+                            .closed
+                            .then((reason) {
+                          if (reason != SnackBarClosedReason.action) {
+                            RestOperation.delete(removedItem.id);
+                          }
+                        });
                       },
                       child: ListTile(
                         leading: ColoredBox(

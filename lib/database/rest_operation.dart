@@ -6,29 +6,17 @@ import 'dart:developer' as developer;
 class RestOperation {
   static final db = FirebaseFirestore.instance;
   static const collection = 'groceries';
-  static void addItem(Map<String, dynamic> grocery, String? id) {
+  static String addItem(Map<String, dynamic> grocery) {
+    var itemId = DateTime.now().toString();
     try {
-      if (id != null) {
-        db.collection(collection).doc(id).set(grocery).then((doc) {
-          developer.log(
-            'Undo success $id',
-            level: 0,
-            stackTrace: StackTrace.current,
-          );
-        }).onError((e, _) {
-          developer.log(
-            'Something went to wrong while undo the item  $e',
-            level: 2,
-            stackTrace: StackTrace.current,
-          );
-        });
-      } else {
+      
         db.collection(collection).add(grocery).then((DocumentReference doc) {
           developer.log(
             'Item added successfully with id  ${doc.id}',
             level: 0,
             stackTrace: StackTrace.current,
           );
+          itemId = doc.id;
         }).onError((e, _) {
           developer.log(
             'Failed to add the item due to $e',
@@ -36,7 +24,7 @@ class RestOperation {
             stackTrace: StackTrace.current,
           );
         });
-      }
+      
     } catch (e) {
       developer.log(
         'Failed to add the item due to $e',
@@ -44,6 +32,7 @@ class RestOperation {
         stackTrace: StackTrace.current,
       );
     }
+    return itemId;
   }
 
   static Future<List<GroceryItem>> getTheData() async {

@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:shopping_list/data/categories.dart';
 import 'package:shopping_list/database/rest_operation.dart';
 import 'package:shopping_list/models/category.dart';
+import 'package:shopping_list/models/grocery_item.dart';
 
 class NewGroceryItem extends StatefulWidget {
   const NewGroceryItem({
@@ -30,9 +31,11 @@ class _NewGroceryItemState extends State<NewGroceryItem> {
         'quantity': _entertedQuantity,
         'category': _enteredCategory!.title,
       };
-      RestOperation.addItem(grocery,null);
+    String id =  RestOperation.addItem(grocery);
       if (!mounted) return;
-      Navigator.of(context).pop();
+      Navigator.of(context).pop(
+        GroceryItem(id: id, name: _enteredItemName, quantity: _entertedQuantity, category: _enteredCategory!),
+      );
     }
   }
 
