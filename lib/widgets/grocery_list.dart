@@ -20,9 +20,8 @@ class _GroceryListState extends State<GroceryList> {
   }
 
   void _loadTheData() async {
- 
     final itemList = await RestOperation.getTheData();
-  
+
     setState(() {
       _groceryList = itemList;
     });
@@ -36,7 +35,7 @@ class _GroceryListState extends State<GroceryList> {
     );
     _loadTheData();
   }
- 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -67,21 +66,23 @@ class _GroceryListState extends State<GroceryList> {
                       ),
                       direction: DismissDirection.startToEnd,
                       onDismissed: (DismissDirection direction) {
-                        final int removedAtIndex = idx;
-                        final GroceryItem removedGrocery = _groceryList[idx];
-                        setState(() {
-                          _groceryList.remove(_groceryList[idx]);
-                        });
+                        final removeItemId = _groceryList[idx].id;
+                        final removedGrocery = {
+                          'name': _groceryList[idx].name,
+                          'quantity': _groceryList[idx].quantity,
+                          'category': _groceryList[idx].category.title,
+                        };
+                        RestOperation.delete(removeItemId);
+                        _loadTheData();
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                            content: Text('${removedGrocery.name} deleted'),
+                            content: Text('${removedGrocery['name']} deleted'),
                             action: SnackBarAction(
                               label: 'Undo',
                               onPressed: () {
-                                setState(() {
-                                  _groceryList.insert(
-                                      removedAtIndex, removedGrocery);
-                                });
+                                RestOperation.addItem(
+                                    removedGrocery, removeItemId);
+                                _loadTheData();
                               },
                             ),
                           ),

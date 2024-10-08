@@ -30,7 +30,7 @@ class _NewGroceryItemState extends State<NewGroceryItem> {
         'quantity': _entertedQuantity,
         'category': _enteredCategory!.title,
       };
-      RestOperation.addItem(grocery);
+      RestOperation.addItem(grocery,null);
       if (!mounted) return;
       Navigator.of(context).pop();
     }
