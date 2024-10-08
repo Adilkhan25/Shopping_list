@@ -6,25 +6,16 @@ import 'dart:developer' as developer;
 class RestOperation {
   static final db = FirebaseFirestore.instance;
   static const collection = 'groceries';
-  static String addItem(Map<String, dynamic> grocery) {
-    var itemId = DateTime.now().toString();
+  static Future<String> addItem(Map<String, dynamic> grocery) async {
+    var itemId = '';
     try {
-      
-        db.collection(collection).add(grocery).then((DocumentReference doc) {
-          developer.log(
-            'Item added successfully with id  ${doc.id}',
-            level: 0,
-            stackTrace: StackTrace.current,
-          );
-          itemId = doc.id;
-        }).onError((e, _) {
-          developer.log(
-            'Failed to add the item due to $e',
-            level: 2,
-            stackTrace: StackTrace.current,
-          );
-        });
-      
+      DocumentReference doc = await db.collection(collection).add(grocery);
+      itemId = doc.id;
+      developer.log(
+        'Item added successfully with id  ${doc.id}',
+        level: 0,
+        stackTrace: StackTrace.current,
+      );
     } catch (e) {
       developer.log(
         'Failed to add the item due to $e',
@@ -64,7 +55,7 @@ class RestOperation {
     return groceryList;
   }
 
-  static Future<void> delete(String id) async {
+  static Future<bool> delete(String id) async {
     try {
       await db.collection(collection).doc(id).delete();
       developer.log(
@@ -72,6 +63,7 @@ class RestOperation {
         level: 0,
         stackTrace: StackTrace.current,
       );
+      return true;
     } catch (e) {
       developer.log(
         'Something went wrong while deleting the data due to $e',
@@ -79,5 +71,6 @@ class RestOperation {
         stackTrace: StackTrace.current,
       );
     }
+    return false;
   }
 }

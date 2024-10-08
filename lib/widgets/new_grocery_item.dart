@@ -24,7 +24,7 @@ class _NewGroceryItemState extends State<NewGroceryItem> {
   Category? _enteredCategory;
   var isSending = false;
 
-  void _addItem(BuildContext context) {
+  void _addItem(BuildContext context) async{
     if (_formKey.currentState!.validate()) {
       isSending = true;
       _formKey.currentState!.save();
@@ -33,7 +33,7 @@ class _NewGroceryItemState extends State<NewGroceryItem> {
         'quantity': _entertedQuantity,
         'category': _enteredCategory!.title,
       };
-      String id = RestOperation.addItem(grocery);
+      String id = await RestOperation.addItem(grocery);
 
       if (!mounted) return;
       Navigator.of(context).pop(

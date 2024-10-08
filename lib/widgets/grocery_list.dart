@@ -99,9 +99,16 @@ class _GroceryListState extends State<GroceryList> {
                                   ),
                                 )
                                 .closed
-                                .then((reason) {
+                                .then((reason) async {
                               if (reason != SnackBarClosedReason.action) {
-                                RestOperation.delete(removedItem.id);
+                                final isDeleted =
+                                    await RestOperation.delete(removedItem.id);
+                                if (!isDeleted) {
+                                  setState(() {
+                                    _groceryList.insert(
+                                        removedAtIndex, removedItem);
+                                  });
+                                }
                               }
                             });
                           },
