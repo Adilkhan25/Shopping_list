@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shopping_list/data/categories.dart';
+import 'package:shopping_list/database/rest_operation.dart';
 import 'package:shopping_list/models/category.dart';
-import 'package:shopping_list/models/grocery_item.dart';
 
 class NewGroceryItem extends StatefulWidget {
   const NewGroceryItem({
@@ -25,11 +25,14 @@ class _NewGroceryItemState extends State<NewGroceryItem> {
   void _addItem(BuildContext context) {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
-      Navigator.of(context).pop(GroceryItem(
-          id: DateTime.now().toString(),
-          name: _enteredItemName,
-          quantity: _entertedQuantity,
-          category: _enteredCategory!));
+      final grocery = {
+        'name': _enteredItemName,
+        'quantity': _entertedQuantity,
+        'category': _enteredCategory!.title,
+      };
+      RestOperation.addItem(grocery);
+      if (!mounted) return;
+      Navigator.of(context).pop();
     }
   }
 
